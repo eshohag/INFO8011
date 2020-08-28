@@ -2,6 +2,7 @@
 using ContactListApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -65,7 +66,9 @@ namespace ContactListApi.Controllers
             {
                 return NotFound();
             }
-            return View(contactListItem);
+            var model = new List<ContactListItem>();
+            model.Add(contactListItem);
+            return View(model);
         }
 
         // POST: ContactList/Edit/1
@@ -77,7 +80,7 @@ namespace ContactListApi.Controllers
             {
                 return NotFound();
             }
-            var isExistPhone = _contactListItemRepository.IsExist(a => a.Phone.Trim() == contactListItem.Phone.Trim() && a.Id!=id);
+            var isExistPhone = _contactListItemRepository.IsExist(a => a.Phone.Trim() == contactListItem.Phone.Trim() && a.Id != id);
             var isExistEmail = _contactListItemRepository.IsExist(a => a.Email.Trim() == contactListItem.Email.Trim() && a.Id != id);
             if (isExistPhone)
             {

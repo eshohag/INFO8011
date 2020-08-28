@@ -5,7 +5,7 @@ namespace ContactListApi.Models
     [System.ComponentModel.DataAnnotations.Schema.Table("ContactListItems")]
     public class ContactListItem
     {
-        [System.ComponentModel.DataAnnotations.Key]
+        [Key]
         public long Id { get; set; }
         [System.ComponentModel.DisplayName("First Name")]
         [Required]
