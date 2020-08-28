@@ -1,5 +1,4 @@
 ﻿using ContactListApi.Models;
-using ContactListApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
@@ -11,17 +10,15 @@ namespace ContactListApi.Controllers
     public class ContactListController : Controller
     {
         private readonly ContactListContext _context;
-        private readonly IContactListItemRepository _contactListItemRepository;
 
-        public ContactListController(ContactListContext context, IContactListItemRepository contactListItemRepository)
+        public ContactListController(ContactListContext context)
         {
             _context = context;
-            _contactListItemRepository = contactListItemRepository;
         }
 
         public IActionResult Index()
         {
-            var list = _contactListItemRepository.All().ToList();
+            var list = _context.ContactListItems.ToList();
             return View(list);
         }
 
@@ -34,13 +31,13 @@ namespace ContactListApi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ContactListItem model)
         {
-            var isExistPhone = _contactListItemRepository.IsExist(a => a.Phone.Trim() == model.Phone.Trim());
-            var isExistEmail = _contactListItemRepository.IsExist(a => a.Email.Trim() == model.Email.Trim());
-            if (isExistPhone)
+            var isExistPhone = _context.ContactListItems.FirstOrDefault(a => a.Phone.Trim() == model.Phone.Trim());
+            var isExistEmail = _context.ContactListItems.FirstOrDefault(a => a.Email.Trim() == model.Email.Trim());
+            if (isExistPhone!=null)
             {
                 ModelState.AddModelError("Phone", "Already Phone no exist!");
             }
-            if (isExistEmail)
+            if (isExistEmail!=null)
             {
                 ModelState.AddModelError("Email", "Already Email no exist!");
             }
@@ -56,11 +53,6 @@ namespace ContactListApi.Controllers
         // GET: ContactList/Edit/1
         public async Task<IActionResult> Edit(long? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var contactListItem = await _context.ContactListItems.FindAsync(id);
             if (contactListItem == null)
             {
@@ -76,38 +68,20 @@ namespace ContactListApi.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(long id, ContactListItem contactListItem)
         {
-            if (id != contactListItem.Id)
-            {
-                return NotFound();
-            }
-            var isExistPhone = _contactListItemRepository.IsExist(a => a.Phone.Trim() == contactListItem.Phone.Trim() && a.Id != id);
-            var isExistEmail = _contactListItemRepository.IsExist(a => a.Email.Trim() == contactListItem.Email.Trim() && a.Id != id);
-            if (isExistPhone)
+            var isExistPhone = _context.ContactListItems.FirstOrDefault(a => a.Phone.Trim() == contactListItem.Phone.Trim() && a.Id != id);
+            var isExistEmail = _context.ContactListItems.FirstOrDefault(a => a.Email.Trim() == contactListItem.Email.Trim() && a.Id != id);
+            if (isExistPhone!=null)
             {
                 ModelState.AddModelError("Phone", "Already Phone no exist!");
             }
-            if (isExistEmail)
+            if (isExistEmail!=null)
             {
                 ModelState.AddModelError("Email", "Already Email no exist!");
             }
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(contactListItem);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ContactListItemExists(contactListItem.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                _context.Update(contactListItem);
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(contactListItem);
@@ -116,11 +90,6 @@ namespace ContactListApi.Controllers
         // GET: ContactList/Delete/1
         public async Task<IActionResult> Delete(long? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var contactListItem = await _context.ContactListItems.FirstOrDefaultAsync(m => m.Id == id);
             if (contactListItem == null)
             {
@@ -138,11 +107,6 @@ namespace ContactListApi.Controllers
             _context.ContactListItems.Remove(contactListItem);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool ContactListItemExists(long id)
-        {
-            return _context.ContactListItems.Any(e => e.Id == id);
         }
     }
 }

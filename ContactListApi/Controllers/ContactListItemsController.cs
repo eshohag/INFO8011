@@ -1,9 +1,7 @@
 ﻿using ContactListApi.Models;
-using ContactListApi.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace ContactListApi.Controllers
@@ -52,31 +50,9 @@ namespace ContactListApi.Controllers
             {
                 return BadRequest(ModelState);
             }
-
-            if (id != contactListItem.Id)
-            {
-                return BadRequest();
-            }
-
             _context.Entry(contactListItem).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContactListItemExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            await _context.SaveChangesAsync();
+            return Ok(contactListItem);
         }
 
         // POST: api/ContactListItems
@@ -113,11 +89,6 @@ namespace ContactListApi.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(contactListItem);
-        }
-
-        private bool ContactListItemExists(long id)
-        {
-            return _context.ContactListItems.Any(e => e.Id == id);
         }
     }
 }

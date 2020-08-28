@@ -1,7 +1,7 @@
 ﻿using ContactListApi.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace ContactListApi.Repository
+namespace ContactListApi
 {
     public class ContactListContext : DbContext
     {
