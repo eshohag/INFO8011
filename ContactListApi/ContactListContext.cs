@@ -9,10 +9,5 @@ namespace ContactListApi
         {
         }
         public DbSet<ContactListItem> ContactListItems { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-           
-        }
     }
 }
