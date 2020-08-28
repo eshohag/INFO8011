@@ -1,0 +1,62 @@
+﻿@model IEnumerable<ContactListItem>
+
+@{
+    ViewData["Title"] = "Contact List";
+    int sl = 1;
+}
+<div class="jumbotron" style="padding-top:10px;">
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Contact Lists</h2>
+            <hr style="margin-top: 0;margin-bottom: 5px;border: 0;border-top: 2px solid #A9A9A9;" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <a asp-area="" asp-controller="ContactList" asp-action="Create" class="btn btn-sm btn-primary" style="margin-bottom:5px;">Create new contact</a>
+            <br />
+            @if (Model.Any())
+            {
+                <table class="table table-sm table-striped table-bordered table-hover">
+                    <thead>
+                        <tr>
+                            <th>SL</th>
+                            <th>Full Name</th>
+                            <th>Phone No</th>
+                            <th>Email</th>
+                            <th>Job Title</th>
+                            <th>Company</th>
+                            <th>City</th>
+                            <th>Country</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@sl</td>
+                                <td>@item.FirstName  @item.LastName</td>
+                                <td>@item.Phone</td>
+                                <td>@item.Email</td>
+                                <td>@item.JobTitle</td>
+                                <td>@item.Company</td>
+                                <td>@item.City</td>
+                                <td>@item.Country</td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                </td>
+                            </tr>
+                            sl++;
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <span>Data not found!</span>
+            }
+        </div>
+    </div>
+</div>
